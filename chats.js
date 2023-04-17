@@ -71,6 +71,8 @@ async function getMessagesByContact(conctactId, userId) {
         if(c.hasMedia) {
             if(c.type == 'image') {
                 htmlMsj = `<img src="data:image/png;base64,${c._data.body}"/>`
+            } else if(c.type == 'document') {
+                htmlMsj = `<p class="chat-message ${c.fromMe ? 'chat-sent' : ''}">Documento: ${c.body}<span class='chat-timestamp'>${transform(c.timestamp)}</span></p>`
             }
         } else {
             if(c.hasQuotedMsg) {
