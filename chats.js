@@ -73,19 +73,41 @@ async function getMessagesByContact(conctactId, userId) {
                 htmlMsj = `<img src="data:image/png;base64,${c._data.body}"/>`
             } else if(c.type == 'document') {
                 htmlMsj = `<p class="chat-message ${c.fromMe ? 'chat-sent' : ''}">Documento: ${c.body}<span class='chat-timestamp'>${transform(c.timestamp)}</span></p>`
+            } else if(c.type == 'ptt') {
+                htmlMsj = `<p class="chat-message ${c.fromMe ? 'chat-sent' : ''}">Audio<span class='chat-timestamp'>${transform(c.timestamp)}</span></p>`
+            } else if(c.type == 'video' && c.isGif == true) {
+                htmlMsj = `Gif:<img src="data:image/png;base64,${c._data.body}"/>`
+            } else if(c.type == 'sticker') {
+                htmlMsj = `<p class="chat-message ${c.fromMe ? 'chat-sent' : ''}">Sticker<span class='chat-timestamp'>${transform(c.timestamp)}</span></p>`
+            } else if(c.type == 'video') {
+                htmlMsj = `<p class="chat-message ${c.fromMe ? 'chat-sent' : ''}">Video<span class='chat-timestamp'>${transform(c.timestamp)}</span></p>`
             }
         } else {
             if(c.hasQuotedMsg) {
                 // c._data.id.fromMe
                 // c._data.quotedMsg.type
+            } else if(c.type == 'revoked') {
+                c.body = 'Mensaje eliminado'
             }
-            htmlMsj = `<p class="chat-message ${c.fromMe ? 'chat-sent' : ''}">${c.body}<span class='chat-timestamp'>${transform(c.timestamp)}</span></p>`
+            htmlMsj = `<p class="chat-message ${c.fromMe ? 'chat-sent' : ''}">${wrap(c.body).replace(/\n/g, "<br />")}<span class='chat-timestamp'>${transform(c.timestamp)}</span></p>`
         }
         
         htmlChat += htmlMsj
     }
 
     $('.message-content').html(htmlChat)
+}
+
+function wrap(str) {
+    if (str) {
+      return str
+        .replace(/(?:\*)([^*]*)(?:\*)/gm, "<strong>$1</strong>")
+        .replace(/(?:_)([^_]*)(?:_)/gm, "<i>$1</i>")
+        .replace(/(?:~)([^~]*)(?:~)/gm, "<strike>$1</strike>")
+        .replace(/(?:```)([^```]*)(?:```)/gm, "<tt>$1</tt>");
+    } else {
+      return str;
+    }
 }
 
 function transform(unix_timestamp) {
